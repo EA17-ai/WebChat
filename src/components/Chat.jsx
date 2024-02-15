@@ -10,6 +10,7 @@ const Chat = () => {
   const [userRooms, setUserRooms] = useState([]);
   const [roomId, setRoomId] = useState("");
   const [name, setName] = useState("");
+  const [roomName,setRoomName]=useState("")
 
   useEffect(() => {
     const fetchUserRooms = async () => {
@@ -49,9 +50,10 @@ const Chat = () => {
       });
   };
 
-  const changeRoomData = async (roomId) => {
+  const changeRoomData = async (roomId,roomname) => {
     socket.emit("join", roomId);
     setRoomId(roomId);
+    setRoomName(roomname)
     const response = await axios.post("http://localhost:3001/getChatMessages", { roomId });
     setMessages(response.data.messagesBackend);
   };
@@ -63,9 +65,12 @@ const Chat = () => {
           <h1>Chats <span className="flex ml-auto text-white">({name})</span></h1>
         </div>
         {userRooms.map((room, index) => (
-          <div key={room.roomId} className="border-b-black border-2 px-1 py-1 bg-white justify-center">
+          <div key={index} className="border-b-black border-2 px-1 py-1 bg-white justify-center">
             <div>
-              <button className="text-black font-bold" onClick={() => changeRoomData(room.roomId)}>Room{index}<span className="text-xs">({room.roomId})</span></button>
+              <button className="text-black font-bold px-2 py-2" onClick={
+                () =>{
+                  changeRoomData(room.roomId,room.roomname)
+                  } }>{room.roomname}</button>
               <span className="text-xs ml-auto text-purple-500">{room.role}</span>
             </div>
             <div className="ml-auto">
@@ -81,7 +86,7 @@ const Chat = () => {
         {roomId ? (
           <>
             <div className="bg-gray-200 flex-1 overflow-y-scroll">
-              <div className="px-2 py-3 bg-white w-full font-serif"><h1>{roomId}</h1></div>
+              <div className="px-2 py-3 bg-white w-full font-serif "><h1 className="ml-6 text-blue-500 font-serif font-bold text-xl">{roomName}</h1></div>
               <div className="px-4 py-2">
                 {messages.map((message, index) => (
                   <div key={index}>

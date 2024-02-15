@@ -62,10 +62,30 @@ io.on("connection", (socket) => {
   });
 
   // Handle disconnection
-  socket.on("disconnect", () => {
+  socket.on("disconngetUserInformationect", () => {
     log(`Socket Disconnected`);
   });
 });
+
+
+
+app.get("/getUserInformation", async (req, res) => {
+  try {
+    const users = await chatmodel.find({}).exec();
+
+    res.status(200).json({  users });
+  } catch (error) {
+    // Handle errors appropriately, e.g., send an error response
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
+
+
 
 // Handle fetching chat messages
 app.post("/getChatMessages", async (req, res) => {
