@@ -12,7 +12,7 @@ const Join = () => {
     const userInformation = async () => {
       try {
         const response = await axios.get("http://localhost:3001/getUserInformation");
-        console.log(response.data)
+        //console.log(response.data)
         const userInfo=response.data.users;
         setUserInformation(userInfo)
       } catch (error) {
@@ -39,7 +39,7 @@ const Join = () => {
     e.preventDefault()
     const roomname=getRoomName(userInformation,room)
     
-    console.log(roomname)
+   // console.log(roomname)
    if(roomname){
       const response=await axios.post("http://localhost:3001/create", {
         name,

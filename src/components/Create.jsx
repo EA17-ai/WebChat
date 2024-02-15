@@ -11,7 +11,7 @@ const Create = () => {
         e.preventDefault()
         try {
           const room = uuidv4();
-          console.log({ "name": name, "room": room, "role": "admin" });
+          //console.log({ "name": name, "room": room, "role": "admin" });
           const response=await axios.post("http://localhost:3001/create", {
             name,
             room,
