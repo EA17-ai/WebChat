@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv"
 dotenv.config()
-mongoose.connect(`mongodb+srv://ea17learning:${process.env.password}@cluster0.qk8ygo5.mongodb.net/?retryWrites=true&w=majority`)
+mongoose.connect(`${process.env.MONGO_URL}`)
 
 const chatSchema=mongoose.Schema({
     email: {
