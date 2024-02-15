@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
 });
 
 
-app.post("/createUser",(req,res)=>{})
+
 
 
 
