@@ -1,10 +1,11 @@
-import { useState } from "react";
+import React,{ useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const Create = () => {
     const navigate=useNavigate()
     const [name, setName] = useState("");
+    const [roomname,setRoomName]=useState("")
     
     const createRoom=async(e)=>{
         e.preventDefault()
@@ -14,6 +15,7 @@ const Create = () => {
           const response=await axios.post("http://localhost:3001/create", {
             name,
             room,
+            roomname,
             role:"admin"
           });
           
@@ -49,6 +51,16 @@ const Create = () => {
         </svg>
         <input type="text" id="username" name={name} value={name} onChange={(e)=>{setName(e.target.value)}} className="bg-gray-200 rounded pl-12 py-2 md:py-4 focus:outline-none w-full" placeholder="Enter your name" />
       </div>
+      <div className="flex items-center text-lg mb-6 md:mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" className="absolute ml-2" width="34" viewBox="0 0 24 24" >
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M10 12h4v4h-4z" />
+</svg>
+        <input type="text" id="username" name={name} value={roomname} onChange={(e)=>{setRoomName(e.target.value)}} className="bg-gray-200 rounded pl-12 py-2 md:py-4 focus:outline-none w-full" placeholder="Enter a Room Name" />
+      </div>
+      
               
       <button onClick={createRoom} className="bg-gradient-to-b from-gray-700 to-gray-900 font-medium p-2 md:p-4 text-white uppercase w-full rounded">Create room</button>
     

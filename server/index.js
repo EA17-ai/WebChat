@@ -1,3 +1,4 @@
+// Import necessary modules
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -5,10 +6,16 @@ import cors from "cors";
 import { log } from "console";
 import { chatmodel } from "./db.js";
 import { roomModel } from "./messages.js";
+
+// Create Express app and set up necessary middleware
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Create an HTTP server using the Express app
 const server = http.createServer(app);
+
+// Create a new instance of the Socket.io server
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -16,98 +23,116 @@ const io = new Server(server, {
   },
 });
 
-
+// Handle socket connections
 io.on("connection", (socket) => {
-  //send message recieved back to frontend
-  socket.on("sendMessage", async ({ message, name, roomId }) => {
-    /* console.log('Message is', message);
-        console.log("name is",name)
-        console.log("RoomID is",roomId)
-         */
-    const existingRoom = await roomModel.findOne({ roomId });
-    //console.log("Existing room is",typeof existingRoom)
-    if (existingRoom) {
-      existingRoom.messages.push({
-        email: name,
-        message: message,
-      });
-      existingRoom.save();
-    } else {
-      const newRoom = roomModel({
-        roomId: roomId,
-        messages: [{ email: name, message: message }],
-      });
-      await newRoom.save();
-    }
-    const roomdata = await roomModel.findOne({ roomId });
-    //console.log("room data",roomdata.messages)
-    const messagefromBackend=roomdata.messages
-    socket.emit("recievedMessage",messagefromBackend) 
-
-   //const messages=getMessageFromRoom(roomId)
-   // socket.emit("recievedMessage",{newmessages:getMessageFromRoom(roomId)})
+  // Handle joining a room
+  socket.on("join", (roomId) => {
+    socket.join(roomId);
+    console.log(`User with socket Id ${socket.id} joined room ${roomId}`);
   });
 
+  // Handle sending a message
+  socket.on("sendMessage", async ({ message, name, roomId }, callback) => {
+    try {
+      const existingRoom = await roomModel.findOne({ roomId });
+
+      if (existingRoom) {
+        existingRoom.messages.push({
+          email: name,
+          message: message,
+        });
+        await existingRoom.save();
+      } else {
+        const newRoom = roomModel({
+          roomId: roomId,
+          messages: [{ email: name, message: message }],
+        });
+        await newRoom.save();
+      }
+
+      const roomData = await roomModel.findOne({ roomId });
+      const messagesFromBackend = roomData.messages;
+
+      io.to(roomId).emit("recievedMessage", messagesFromBackend);
+      callback();
+    } catch (error) {
+      console.error("Error handling sendMessage:", error);
+      callback(error);
+    }
+  });
+
+  // Handle disconnection
   socket.on("disconnect", () => {
     log(`Socket Disconnected`);
   });
 });
 
+// Handle fetching chat messages
 app.post("/getChatMessages", async (req, res) => {
-    try {
-      const roomId = req.body.roomId;
-      let messageFromBackend = [];
-  
-      const roomData = await roomModel.findOne({ roomId });
-  
-      if (roomData && roomData.messages.length !== 0) {
-        messageFromBackend = roomData.messages;
-      } else {
-        messageFromBackend = [];
-      }
-  
-      res.json({ messagesBackend: messageFromBackend });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-  
+  try {
+    const roomId = req.body.roomId;
+    let messagesFromBackend = [];
 
+    const roomData = await roomModel.findOne({ roomId });
+
+    if (roomData && roomData.messages.length !== 0) {
+      messagesFromBackend = roomData.messages;
+    } else {
+      messagesFromBackend = [];
+    }
+
+    res.json({ messagesBackend: messagesFromBackend });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Handle fetching user rooms
 app.post("/getUserRooms", async (req, res) => {
   const email = req.body.name;
   const user = await chatmodel.findOne({ email });
-  //console.log("user is",user)
-  const userRooms = user.rooms;
-  //console.log("userrooms are", typeof userRooms);
-  res.json({ userRooms: userRooms });
+  if(user){
+    const userRooms = user.rooms;
+    res.json({ userRooms: userRooms });
+  }
+  else{
+    res.json({ userRooms: [] });
+  }
+  
 });
 
+// Handle creating or updating a user
 app.post("/create", async (req, res) => {
   try {
-    const { name, room, role } = req.body;
+    const { name, room,roomname, role } = req.body;
+    console.log("roomname is",roomname)
     const existingUser = await chatmodel.findOne({ email: name });
+
     if (existingUser) {
       existingUser.rooms.push({
         roomId: room,
         role: role,
+        roomname:roomname
       });
       existingUser.save();
     } else {
       const newUser = chatmodel({
         email: name,
-        rooms: [{ roomId: room, role: role }],
+        rooms: [{ roomId: room,roomname:roomname, role: role }],
       });
       await newUser.save();
-      //  console.log('New user created successfully:', newUser);
     }
-  
+
     res.json({ message: "Room added" });
   } catch (error) {
     console.error("Error adding or updating user:", error);
   }
 });
 
+
+
+// Start the server on port 3001
 server.listen(3001, () => {
   log(`Server running on port 3001`);
 });
