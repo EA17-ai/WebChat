@@ -18,7 +18,7 @@ const server = http.createServer(app);
 // Create a new instance of the Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "https://webchat-6guy.onrender.com",
+    origin: "https://webchat-6guy.onrender.com/",
     methods: ["GET", "POST"],
   },
 });
@@ -66,6 +66,10 @@ io.on("connection", (socket) => {
     log(`Socket Disconnected`);
   });
 });
+
+
+app.post("/createUser",(req,res)=>{})
+
 
 
 
