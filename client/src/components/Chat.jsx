@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const BACKEND_LINK="http://localhost:3001"
+const BACKEND_LINK="https://chatbackend-o8wq.onrender.com"
 const socket = io(BACKEND_LINK);
 
 const Chat = () => {
@@ -18,7 +18,7 @@ const Chat = () => {
       try {
         const name = localStorage.getItem("username");
         setName(name);
-        const response = await axios.post("http://localhost:3001/getUserRooms", { name });
+        const response = await axios.post("https://chatbackend-o8wq.onrender.com/getUserRooms", { name });
         setUserRooms(response.data.userRooms);
       } catch (error) {
         console.error('Error fetching user rooms:', error);
@@ -55,7 +55,7 @@ const Chat = () => {
     socket.emit("join", roomId);
     setRoomId(roomId);
     setRoomName(roomname)
-    const response = await axios.post("http://localhost:3001/getChatMessages", { roomId });
+    const response = await axios.post("https://chatbackend-o8wq.onrender.com/getChatMessages", { roomId });
     setMessages(response.data.messagesBackend);
   };
 

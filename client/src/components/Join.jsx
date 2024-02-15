@@ -11,7 +11,7 @@ const Join = () => {
   useEffect(() => {
     const userInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/getUserInformation");
+        const response = await axios.get("https://chatbackend-o8wq.onrender.com/getUserInformation");
         //console.log(response.data)
         const userInfo=response.data.users;
         setUserInformation(userInfo)
@@ -41,7 +41,7 @@ const Join = () => {
     
    // console.log(roomname)
    if(roomname){
-      const response=await axios.post("http://localhost:3001/create", {
+      const response=await axios.post("https://chatbackend-o8wq.onrender.com/create", {
         name,
         roomname:roomname,
         room,

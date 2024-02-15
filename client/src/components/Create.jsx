@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const Create = () => {
-    const BACKEND_LINK="http://localhost:3001"
+    const BACKEND_LINK="https://chatbackend-o8wq.onrender.com"
     const navigate=useNavigate()
     const [name, setName] = useState("");
     const [roomname,setRoomName]=useState("")

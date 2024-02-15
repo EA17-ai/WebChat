@@ -18,7 +18,7 @@ const server = http.createServer(app);
 // Create a new instance of the Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://webchat-6guy.onrender.com",
     methods: ["GET", "POST"],
   },
 });
