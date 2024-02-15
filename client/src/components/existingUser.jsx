@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const ExistingUser = () => {
-  const BACKEND_LINK = "http://localhost:3001";
+  const BACKEND_LINK = "https://chatbackend-o8wq.onrender.com";
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [userInformation, setUserInformation] = useState([]);
@@ -12,7 +12,7 @@ const ExistingUser = () => {
   useEffect(() => {
     const fetchUserInformation = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/getUserInformation");
+        const response = await axios.get("https://chatbackend-o8wq.onrender.com/getUserInformation");
         const userInfo = response.data.users;
         setUserInformation(userInfo);
       } catch (error) {
@@ -28,7 +28,7 @@ const ExistingUser = () => {
 
     // Check if the entered username exists in the user information
     const userExists = userInformation.find(user => user.email === name);
-    
+    console.log(userExists)
     if (userExists) {
       localStorage.setItem("username", name);
       navigate("/chat");
